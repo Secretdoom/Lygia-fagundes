@@ -72,14 +72,22 @@
         }
         .menu-title { 
             font-family: 'Special Elite'; 
-            font-size: clamp(40px, 9vw, 85px); 
+            font-size: clamp(35px, 7vw, 75px); 
             animation: glitch 0.4s infinite; 
             color: var(--accent-orange); 
             text-shadow: 0 0 15px rgba(255,126,51,0.5); 
-            margin-bottom: 30px;
+            margin-bottom: 15px;
             text-align: center;
             text-transform: uppercase;
             letter-spacing: 2px;
+        }
+        .menu-sub {
+            font-family: 'Cormorant Garamond';
+            font-size: 22px;
+            font-style: italic;
+            color: #ccc;
+            margin-bottom: 40px;
+            text-shadow: 0 2px 4px #000;
         }
         @keyframes glitch { 
             0% { transform: translate(0); } 
@@ -162,7 +170,9 @@
             background: var(--window-bg);
             border: 2px solid var(--window-border);
             padding: 16px;
-            width: 320px;
+            width: 340px;
+            max-height: 440px;
+            overflow-y: auto;
             box-shadow: 0 25px 60px rgba(0,0,0,0.98);
             backdrop-filter: blur(16px);
             border-radius: 4px;
@@ -189,7 +199,7 @@
         .hdr-task { color: #f5f3ff; text-shadow: 0 2px 4px rgba(0,0,0,0.9); }
 
         .task-row { 
-            font-size: 22px; 
+            font-size: 19px; 
             color: #cbd5e1; 
             display: flex; 
             align-items: center; 
@@ -283,6 +293,59 @@
             width: 22px;
             height: 22px;
         }
+
+        /* PUZZLE DIALOGS / PIN LOCK OVERLAYS */
+        #safe-input-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(2, 1, 5, 0.95);
+            z-index: 4000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-family: 'Special Elite', monospace;
+        }
+        .safe-lock-box {
+            background: #110e16;
+            border: 3px double var(--accent-purple);
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(168, 85, 247, 0.3);
+            max-width: 320px;
+            width: 90%;
+        }
+        .safe-display {
+            background: #000;
+            color: var(--panic-red);
+            font-size: 36px;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            border: 1px solid var(--accent-purple-dark);
+            letter-spacing: 10px;
+            text-shadow: 0 0 10px var(--panic-red);
+        }
+        .safe-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .safe-btn {
+            background: #201a2b;
+            color: #fff;
+            border: 1px solid #5b21b6;
+            padding: 15px;
+            font-size: 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.2s;
+            font-family: 'Special Elite';
+        }
+        .safe-btn:hover { background: var(--accent-purple-dark); }
+        .safe-btn-cancel { background: #450a0a; border-color: #ef4444; }
 
         #settings-overlay {
             position: absolute;
@@ -612,13 +675,14 @@
         /* RESPONSIVE OVERRIDES FOR MOBILE HUD */
         @media (max-width: 900px) {
             #task-panel {
-                width: 240px;
+                width: 260px;
                 padding: 10px;
                 top: 70px;
                 left: 10px;
+                max-height: 280px;
             }
             .task-row {
-                font-size: 17px;
+                font-size: 15px;
                 margin: 4px 0;
             }
             #cine-badge {
@@ -631,19 +695,20 @@
 
 <div id="viewport-container">
     
-    <!-- === MENU PRINCIPAL DE ENTRADA (MIGRADO PARA O INÍCIO) === -->
+    <!-- === MENU PRINCIPAL DE ENTRADA === -->
     <div id="menu">
         <h3 class="menu-title">venha ver o pôr do sol</h3>
+        <span class="menu-sub">Homenagem interativa à Lygia Fagundes Telles</span>
         <button class="btn-menu-start" onclick="iniciarTudo()">INICIAR JOGO</button>
     </div>
 
     <!-- ==================== PARTE 1: O CASARÃO ==================== -->
     <div id="part1-wrapper">
         <div id="game-scaler">
-            <div id="cine-badge">HOMENAGEM A LYGIA FAGUNDES TELLES</div>
+            <div id="cine-badge">SUSSURRO | CINE INTERACTIVE</div>
             
             <!-- BOTÃO PARA VER TAREFAS -->
-            <button id="tasks-trigger-btn" class="game-hud" onclick="TasksSystem.toggle(event)">TAREFAS</button>
+            <button id="tasks-trigger-btn" class="game-hud" onclick="TasksSystem.toggle(event)">PROCESSO COGNITIVO</button>
 
             <!-- BOTÃO FLUTUANTE DE PAUSA -->
             <button id="pause-trigger-btn" onclick="MenuSystem.open()" title="Pausar / Configurações">
@@ -652,13 +717,19 @@
                 </svg>
             </button>
 
+            <!-- TAREFAS AMPLIADAS (DE 6 PARA 10 COISAS A FAZER) -->
             <div id="task-panel">
-                <div class="hud-hdr hdr-task">PROCESSO COGNITIVO</div>
+                <div class="hud-hdr hdr-task">OBJETIVOS PSICOLÓGICOS</div>
                 <div id="t1" class="task-row"><span class="bullet"></span> Sobretudo de Lã (Quarto)</div>
                 <div id="t2" class="task-row"><span class="bullet"></span> Chaves de Latão (Banheiro)</div>
                 <div id="t3" class="task-row"><span class="bullet"></span> Café Amargo (Cozinha)</div>
                 <div id="t4" class="task-row"><span class="bullet"></span> Chopin na Vitrola (Sala)</div>
                 <div id="t5" class="task-row"><span class="bullet"></span> Autoanálise (Espelho)</div>
+                <!-- NOVOS OBJETIVOS -->
+                <div id="t_clock" class="task-row"><span class="bullet"></span> Consertar Relógio de Pêndulo</div>
+                <div id="t_safe" class="task-row"><span class="bullet"></span> Desvendar Segredo do Cofre</div>
+                <div id="t_lore" class="task-row"><span class="bullet"></span> Fragmentos de Diário (0/4)</div>
+                <div id="t_garden" class="task-row"><span class="bullet"></span> Visitar o Estufa / Jardim</div>
                 <div id="t6" class="task-row"><span class="bullet"></span> Sair do Casarão (Portão)</div>
             </div>
 
@@ -670,6 +741,29 @@
             </div>
             <div id="mobile-actions">
                 <button class="action-btn" id="btn-action">AÇÃO</button>
+            </div>
+        </div>
+
+        <!-- COFRE DIALPAD INTERATIVO (DENTRO DA EXAMINÇÃO DO COFRE) -->
+        <div id="safe-input-overlay">
+            <div class="safe-lock-box">
+                <h3 style="color:var(--accent-purple-bright); margin-bottom:15px; font-size:18px;">DIGITE A COMBINAÇÃO</h3>
+                <div class="safe-display" id="safe-display-text">---</div>
+                <div class="safe-grid">
+                    <button class="safe-btn" onclick="SafePuzzle.press(1)">1</button>
+                    <button class="safe-btn" onclick="SafePuzzle.press(2)">2</button>
+                    <button class="safe-btn" onclick="SafePuzzle.press(3)">3</button>
+                    <button class="safe-btn" onclick="SafePuzzle.press(4)">4</button>
+                    <button class="safe-btn" onclick="SafePuzzle.press(5)">5</button>
+                    <button class="safe-btn" onclick="SafePuzzle.press(6)">6</button>
+                    <button class="safe-btn" onclick="SafePuzzle.press(7)">7</button>
+                    <button class="safe-btn" onclick="SafePuzzle.press(8)">8</button>
+                    <button class="safe-btn" onclick="SafePuzzle.press(9)">9</button>
+                    <button class="safe-btn safe-btn-cancel" onclick="SafePuzzle.cancel()">X</button>
+                    <button class="safe-btn" onclick="SafePuzzle.press(0)">0</button>
+                    <button class="safe-btn" style="background:#15803d; border-color:#22c55e;" onclick="SafePuzzle.confirm()">OK</button>
+                </div>
+                <p style="font-size:14px; color:#a78bfa;">A pista está ligada ao pôr do sol anunciado na carta.</p>
             </div>
         </div>
 
@@ -756,7 +850,7 @@
 
 <script>
 /**
- * 🚀 SUSSURRO SPLICED INTEGRATION SYSTEM v9.0 [DIRECTOR'S FULL EDITION]
+ * 🚀 SUSSURRO SPLICED INTEGRATION SYSTEM v10.0 [DIRECTOR'S FULL EDITION]
  * Integração seamless entre exploração do casarão (Parte 1) e o cemitério de Santa Maria (Parte 2).
  */
 
@@ -779,6 +873,7 @@ function iniciarTudo() {
     menuDiv.style.opacity = '0';
     
     // Liga o som procedural
+    SoundSynth.init();
     SoundSynth.toggle();
     
     setTimeout(() => {
@@ -1100,6 +1195,52 @@ const audioPart2 = {
     }
 };
 
+// COFRE PUZZLE CONTROLADOR (NOVO)
+const SafePuzzle = {
+    currentInput: "",
+    correctCode: "1830", // Alinhado ao horário do pôr do sol do bilhete (18h30)
+    open() {
+        if (GameState.tasks.safe) return;
+        GameState.isPaused = true;
+        document.getElementById('safe-input-overlay').style.display = "flex";
+        this.currentInput = "";
+        this.updateDisplay();
+    },
+    press(num) {
+        if (this.currentInput.length < 4) {
+            this.currentInput += num;
+            this.updateDisplay();
+            SoundSynth.playStep('carpet');
+        }
+    },
+    cancel() {
+        document.getElementById('safe-input-overlay').style.display = "none";
+        GameState.isPaused = false;
+    },
+    updateDisplay() {
+        let display = this.currentInput;
+        while (display.length < 4) display += "-";
+        document.getElementById('safe-display-text').innerText = display;
+    },
+    confirm() {
+        if (this.currentInput === this.correctCode) {
+            document.getElementById('safe-input-overlay').style.display = "none";
+            GameState.isPaused = false;
+            GameState.tasks.safe = true;
+            GameState.checkHUD();
+            
+            // Recompensar com a chave do portão ou carta secreta
+            NarrativeSystem.setThought("O cofre destravou! Encontrei cartas antigas e a Chave Geral de Latão do portão dos fundos do casarão! Ricardo guardava tudo.");
+            audioPart2.playTone(520, 0.4, 'sine', 0.2);
+        } else {
+            this.currentInput = "";
+            this.updateDisplay();
+            SoundSynth.playStep('asphalt'); // Erro de som
+            NarrativeSystem.setThought("Código incorreto. A trava eletrônica de Ricardo permaneceu fechada.");
+        }
+    }
+};
+
 // GERENCIADOR DE INPUT CENTRAL (PARTE 1)
 const Input = {
     keys: Object.create(null),
@@ -1204,8 +1345,12 @@ const LoreSystem = {
     active: false,
     content: {
         envelope: "Raquel: 'Um bilhete elegante do meu noivo... Ele espera que eu seja o ornamento perfeito para a nossa nova mansão. O amor dele é tão geométrico... tão seguro.'",
-        letter: "Raquel: 'Chopin... esta partitura que Ricardo me deu no nosso primeiro aniversário. Escrito à mão nas margens: *Para Raquel, que compreende que o pôr do sol é a única eternidade que nos resta.*'",
-        oldPhoto: "Ricardo e eu em frente ao portão de Santa Maria, cinco anos atrás. Ele sorria sem possuir nada no bolso... apenas aquela insolência que agora me aterroriza."
+        letter: "Raquel: 'Chopin... esta partitura que Ricardo me deu no nosso primeiro aniversário. Escrito à mão nas margens: *Para Raquel, que compreende que o pôr do sol é a única eternidade que nos resta em Santa Maria.* (Anotação posterior: 'O relógio de pêndulo deve parar na hora do nosso crepúsculo final, às 18:30.')'",
+        oldPhoto: "Ricardo e eu em frente ao portão de Santa Maria, cinco anos atrás. Ele sorria sem possuir nada no bolso... apenas aquela insolência que agora me aterroriza.",
+        diary1: "[FRAGMENTO 1/4] 'Ricardo tornou-se obcecado pelo casarão abandonado dos Meireles. Ele me comprou flores hoje, mas elas já estavam murchas. Há uma febre em seus olhos.'",
+        diary2: "[FRAGMENTO 2/4] 'Eu decidi deixá-lo. Meu casamento com o banqueiro me trará segurança, mas por que sinto que estou vendendo minha alma em parcelas?'",
+        diary3: "[FRAGMENTO 3/4] 'Ele me mandou uma última carta. Diz que o pôr do sol no jazigo de Santa Maria selará o nosso pacto. Estou com medo de ir... mas sinto uma atração terrível por este fim.'",
+        diary4: "[FRAGMENTO 4/4] 'Consegui destravar a estufa. As rosas negras floresceram alimentadas pelo mofo e pelo esquecimento. Ricardo me espera... o código do cofre é o horário de nossa última despedida.'"
     },
     open(id) {
         if (this.active || GameState.isPaused) return;
@@ -1215,6 +1360,24 @@ const LoreSystem = {
         textDiv.innerText = this.content[id] || "";
         overlay.classList.add('active');
         GameState.cutsceneActive = true;
+
+        // Atualizar contagem de diários se for fragmento
+        if (id.startsWith('diary')) {
+            if (!GameState.diariesCollected.has(id)) {
+                GameState.diariesCollected.add(id);
+                GameState.tasks.diaryCount = GameState.diariesCollected.size;
+                GameState.checkHUD();
+                
+                // Mostrar progresso no HUD
+                let hRow = document.getElementById('t_lore');
+                if (hRow) {
+                    hRow.innerHTML = `<span class="bullet"></span> Fragmentos de Diário (${GameState.tasks.diaryCount}/4)`;
+                    if (GameState.tasks.diaryCount === 4) {
+                        hRow.classList.add('task-complete');
+                    }
+                }
+            }
+        }
     },
     close() {
         let overlay = document.getElementById('lore-overlay');
@@ -1243,7 +1406,7 @@ const TasksSystem = {
         if (this.timeoutId) clearTimeout(this.timeoutId);
         this.timeoutId = setTimeout(() => {
             this.hide();
-        }, 6000);
+        }, 8000); // Maior tempo no ar para acompanhar novos objetivos
     },
     hide() {
         let panel = document.getElementById('task-panel');
@@ -1301,12 +1464,12 @@ const MenuSystem = {
 
         if(size === 'small') {
             document.getElementById('txt-sz-sm').classList.add('active');
-            taskRows.forEach(row => row.style.fontSize = "17px");
-            tPanel.style.width = "270px";
+            taskRows.forEach(row => row.style.fontSize = "16px");
+            tPanel.style.width = "280px";
         } else {
             document.getElementById('txt-sz-lg').classList.add('active');
-            taskRows.forEach(row => row.style.fontSize = "22px");
-            tPanel.style.width = "320px";
+            taskRows.forEach(row => row.style.fontSize = "19px");
+            tPanel.style.width = "340px";
         }
     },
     updateGamma(val) {
@@ -1322,6 +1485,7 @@ const TextureCache = {
     woodFloor: null, tilesFloor: null, carpetFloor: null, bathroomTiles: null,
     corridorPlanks: null, wallPaper: null, asphalt: null, puddleNoise: null,
     lightCone: null, ricardoLight: null, sedanLight: null, fireplaceEmbers: null,
+    conservatorySoil: null,
 
     async init() {
         this.woodFloor = this.createBuffer(600, 500, (ctx) => {
@@ -1395,6 +1559,29 @@ const TextureCache = {
                 ctx.fillStyle = (Math.cos(x*0.06) > 0) ? "#0d0908" : "#070504";
                 ctx.fillRect(x, 0, 36, 900);
                 ctx.strokeRect(x, 0, 36, 900);
+            }
+        });
+
+        // TEXTURA PARA O NOVO CÔMODO: ESTUFA/JARDIM DE INVERNO
+        this.conservatorySoil = this.createBuffer(600, 500, (ctx) => {
+            ctx.fillStyle = "#1c1410"; ctx.fillRect(0, 0, 600, 500);
+            // Tijolos da estufa
+            ctx.strokeStyle = "rgba(0,0,0,0.4)";
+            ctx.lineWidth = 2;
+            let sz = 35;
+            for(let y = 0; y < 500; y += sz) {
+                for(let x = 0; x < 600; x += sz) {
+                    ctx.fillStyle = (Math.sin(x*y)*20 > 0) ? "#1f1814" : "#19110d";
+                    ctx.fillRect(x, y, sz, sz);
+                    ctx.strokeRect(x, y, sz, sz);
+                }
+            }
+            // Mofo e trepadeiras nas bordas
+            ctx.fillStyle = "rgba(6, 78, 59, 0.25)";
+            for(let i=0; i<80; i++) {
+                ctx.beginPath();
+                ctx.arc(Math.random()*600, Math.random()*500, 15+Math.random()*45, 0, Math.PI*2);
+                ctx.fill();
             }
         });
 
@@ -1504,6 +1691,8 @@ const NarrativeSystem = {
     setThought(txt, panic = false) {
         if (this.targetText === txt) return;
         this.targetText = txt; this.displayedText = ""; this.timer = 0; this.isPanicText = panic;
+        // Mostrar automaticamente a aba de tarefas para refletir novos estados
+        TasksSystem.show();
     },
     update(dt) {
         if (this.displayedText.length < this.targetText.length) {
@@ -1557,6 +1746,12 @@ function drawThoughtBubble(ctx, text, px, py, isPanic) {
     
     let bx = px - boxWidth / 2;
     let by = py - boxHeight - 42;
+    
+    // Evitar que estoure fora da tela
+    if (bx < 10) bx = 10;
+    if (bx + boxWidth > V_WIDTH + GameEngine.sceneManager.currentScene.cameraX - 10) {
+        bx = V_WIDTH + GameEngine.sceneManager.currentScene.cameraX - boxWidth - 10;
+    }
     
     if (isPanic) {
         bx += (Math.random() - 0.5) * 4;
@@ -1726,7 +1921,11 @@ const GhostPool = {
 };
 
 const GameState = {
-    tasks: { cloth: false, keys: false, coffee: false, radio: false, mirror: false, street: false },
+    tasks: { 
+        cloth: false, keys: false, coffee: false, radio: false, mirror: false, street: false,
+        clockHandFound: false, clockRepaired: false, safe: false, diaryCount: 0, gardenVisited: false
+    },
+    diariesCollected: new Set(),
     panicLevel: 0.0, qteActive: false, qteProgress: 0, qteTarget: 0, cutsceneActive: false,
     lastPanicState: false, glitchTimer: 0, glitchIntensity: 0,
     rhythmTimer: 0, rhythmTargetRadius: 40, rhythmSuccessRadius: 40,
@@ -1738,6 +1937,10 @@ const GameState = {
         if (this.tasks.coffee) { let e = document.getElementById('t3'); if(e) e.classList.add('task-complete'); }
         if (this.tasks.radio) { let e = document.getElementById('t4'); if(e) e.classList.add('task-complete'); }
         if (this.tasks.mirror) { let e = document.getElementById('t5'); if(e) e.classList.add('task-complete'); }
+        // NOVAS TAREFAS HUD
+        if (this.tasks.clockRepaired) { let e = document.getElementById('t_clock'); if(e) e.classList.add('task-complete'); }
+        if (this.tasks.safe) { let e = document.getElementById('t_safe'); if(e) e.classList.add('task-complete'); }
+        if (this.tasks.gardenVisited) { let e = document.getElementById('t_garden'); if(e) e.classList.add('task-complete'); }
         if (this.tasks.street) { let e = document.getElementById('t6'); if(e) e.classList.add('task-complete'); }
     },
     triggerPanicHUD(active) {
@@ -2327,6 +2530,7 @@ class SceneQuarto {
         this.manager = manager; 
         this.player = new Player(180, 220);
         
+        // Mapa expandido com novos limites e mais espaço explorável de casarão
         this.boundaries = { minX: 45, maxX: 1555, minY: 110, maxY: 945, isRua: false };
         this.cameraX = 0; this.cameraY = 0;
         
@@ -2334,6 +2538,7 @@ class SceneQuarto {
         this.thunderActive = false;
         this.thunderAlpha = 0;
 
+        // Obstáculos do mapa reorganizados para incluir ESCRITÓRIO e ESTUFA/JARDIM
         this.obstacles = [
             { x: 0, y: 0, w: 1600, h: 100 }, 
             { x: 500, y: 100, w: 40, h: 180 },  
@@ -2354,7 +2559,9 @@ class SceneQuarto {
             { x: 1260, y: 220, w: 120, h: 80 }, 
             { x: 1120, y: 610, w: 80, h: 55 },  
             { x: 1350, y: 610, w: 60, h: 50 },  
-            { x: 1150, y: 800, w: 150, h: 65 }  
+            { x: 1150, y: 800, w: 150, h: 65 },
+            // Novas paredes estruturais para a Estufa e Escritório
+            { x: 1300, y: 500, w: 30, h: 200 }
         ];
 
         this.doorways = [
@@ -2443,6 +2650,114 @@ class SceneQuarto {
                 interact(p, dt) {
                     LoreSystem.open("letter");
                 }
+            },
+            
+            // ==========================================
+            // NOVOS PROPS INTERATIVOS (PUZZLES & LORE)
+            // ==========================================
+            
+            // 1. Relógio de Pêndulo (Sala) - Exige ponteiro escondido para ser consertado
+            {
+                name: "grandfatherClock", x: 850, y: 820, w: 50, h: 80, color: "#451a03",
+                interact(p, dt) {
+                    if (GameState.tasks.clockRepaired) {
+                        NarrativeSystem.setThought("O Relógio de Pêndulo está consertado e fixado em 18:30, como pedia a partitura.");
+                        return;
+                    }
+                    if (GameState.tasks.clockHandFound) {
+                        p.holdTimer += dt;
+                        NarrativeSystem.setThought("Encaixando o ponteiro de minutos no mostrador dourado do relógio...");
+                        if (p.holdTimer >= p.maxHold) {
+                            GameState.tasks.clockRepaired = true;
+                            GameState.checkHUD();
+                            NarrativeSystem.setThought("O relógio deu corda. O pêndulo voltou a bater. Os ponteiros marcaram 18:30 de forma automática! Um clique metálico ecoou no cofre secreto.");
+                            audioPart2.playTone(330, 0.5, 'sine', 0.15);
+                        }
+                    } else {
+                        NarrativeSystem.setThought("O relógio de pêndulo está quebrado e parou. Falta o ponteiro dos minutos para ajustar o tempo. Talvez esteja guardado em alguma gaveta de móvel.");
+                    }
+                }
+            },
+            
+            // 2. Gaveta de Utilidades da Cozinha (Cozinha) - Guarda o ponteiro do relógio
+            {
+                name: "kitchenDrawer", x: 1420, y: 110, w: 60, h: 50, color: "#1e1b4b",
+                interact(p, dt) {
+                    if (GameState.tasks.clockHandFound) {
+                        NarrativeSystem.setThought("Apenas talheres enferrujados e papéis sem utilidade nesta gaveta.");
+                        return;
+                    }
+                    p.holdTimer += dt;
+                    NarrativeSystem.setThought("Revirando a gaveta trancada da cozinha...");
+                    if (p.holdTimer >= p.maxHold) {
+                        GameState.tasks.clockHandFound = true;
+                        NarrativeSystem.setThought("Encontrei o Ponteiro dourado de Bronze do relógio de pêndulo! Estava sob cartas antigas.");
+                        audioPart2.playTone(440, 0.25, 'sine', 0.1);
+                    }
+                }
+            },
+            
+            // 3. Quadro Rasgado / Cofre de Parede (Escritório) - O Cofre misterioso
+            {
+                name: "hiddenSafe", x: 740, y: 110, w: 80, h: 45, color: "#065f46",
+                interact(p, dt) {
+                    if (GameState.tasks.safe) {
+                        NarrativeSystem.setThought("O cofre de parede atrás do quadro está aberto. Ricardo guardava cópias de chaves aqui.");
+                        return;
+                    }
+                    if (!GameState.tasks.clockRepaired) {
+                        NarrativeSystem.setThought("Raquel: 'Há um cofre eletrônico de metal pesado oculto sob este quadro rasgado. O visor digital está desligado. Parece que a energia dele é controlada pelo sistema do relógio.'");
+                    } else {
+                        SafePuzzle.open();
+                    }
+                }
+            },
+
+            // 4. Estufa de Rosas Negras (Jardim de Inverno) - Ativa a visita ao jardim
+            {
+                name: "winterGardenPlants", x: 1420, y: 760, w: 100, h: 80, color: "#064e3b",
+                interact(p, dt) {
+                    if (!GameState.tasks.gardenVisited) {
+                        GameState.tasks.gardenVisited = true;
+                        GameState.checkHUD();
+                        NarrativeSystem.setThought("A estufa abandonada... Rosas secas e vinhas que sobem pelas colunas. Ricardo costumava colher espinhos aqui para ferir as minhas palavras.");
+                        audioPart2.playTone(280, 0.4, 'sine', 0.12);
+                    } else {
+                        NarrativeSystem.setThought("O mofo e as rosas morrem juntos na estufa abandonada.");
+                    }
+                }
+            },
+
+            // 5. Baú Velho de Couro (Jardim de Inverno) - Guarda o fragmento de diário 4
+            {
+                name: "oldChest", x: 1510, y: 880, w: 40, h: 40, color: "#451a03",
+                interact(p, dt) {
+                    LoreSystem.open("diary4");
+                }
+            },
+
+            // 6. Mesa do Escritório (Escritório) - Diário fragmento 1
+            {
+                name: "officeDesk", x: 620, y: 740, w: 90, h: 60, color: "#3f1a04",
+                interact(p, dt) {
+                    LoreSystem.open("diary1");
+                }
+            },
+
+            // 7. Prateleiras Antigas (Corredor Central) - Diário fragmento 2
+            {
+                name: "hallwayShelf", x: 550, y: 440, w: 60, h: 40, color: "#1e1b4b",
+                interact(p, dt) {
+                    LoreSystem.open("diary2");
+                }
+            },
+
+            // 8. Poltrona Velha (Sala de Visitas) - Diário fragmento 3
+            {
+                name: "oldArmchair", x: 1100, y: 880, w: 50, h: 50, color: "#7f1d1d",
+                interact(p, dt) {
+                    LoreSystem.open("diary3");
+                }
             }
         ];
         
@@ -2459,7 +2774,7 @@ class SceneQuarto {
                     GameState.qteActive = false; 
                     GameState.tasks.mirror = true; 
                     GameState.checkHUD();
-                    NarrativeSystem.setThought("Raquel: 'Eu me fitei demoradamente. A culpa ainda está lá, mas eu sou mais forte.'");
+                    NarrativeSystem.setThought("Raquel: 'Eu me fitei demoradamente no reflexo trincado. O tempo e as cicatrizes estão lá, mas eu sou mais forte para enfrentá-lo hoje.'");
                 } else {
                     GameState.rhythmTimer = 0;
                 }
@@ -2473,13 +2788,13 @@ class SceneQuarto {
         window.addEventListener('keydown', (e) => { if (e.key === " " && CURRENT_GAME_PART === 1) triggerPulse(); });
         window.addEventListener('pointerdown', (e) => {
             if (CURRENT_GAME_PART !== 1) return;
-            if (e.target.closest('#mobile-joystick') || e.target.closest('#mobile-actions') || e.target.closest('#lore-overlay') || e.target.closest('#settings-overlay') || e.target.closest('#pause-trigger-btn') || e.target.closest('#tasks-trigger-btn') || e.target.closest('#task-panel')) return;
+            if (e.target.closest('#mobile-joystick') || e.target.closest('#mobile-actions') || e.target.closest('#lore-overlay') || e.target.closest('#settings-overlay') || e.target.closest('#pause-trigger-btn') || e.target.closest('#tasks-trigger-btn') || e.target.closest('#task-panel') || e.target.closest('#safe-input-overlay')) return;
             triggerPulse();
         });
     }
 
     onEnter() { 
-        NarrativeSystem.setThought("Ricardo implorou que eu o visse uma última vez... Para vermos o pôr do sol no velho cemitério de Santa Maria."); 
+        NarrativeSystem.setThought("Ricardo implorou que eu o visse uma última vez... Para vermos o pôr do sol no velho cemitério de Santa Maria. Preciso examinar o casarão antes de partir."); 
     }
 
     update(dt) {
@@ -2540,12 +2855,18 @@ class SceneQuarto {
             }
         }
 
-        // PORTÃO DE SAÍDA DO CASARÃO
+        // PORTÃO DE SAÍDA DO CASARÃO (Fundos)
         if (this.player.pos.x > 1515 && this.player.pos.y > 720 && this.player.pos.y < 860) {
-            if (GameState.tasks.cloth && GameState.tasks.keys && GameState.tasks.coffee && GameState.tasks.radio && GameState.tasks.mirror) {
+            // Exigir TODOS os objetivos, incluindo puzzles adicionais
+            if (GameState.tasks.cloth && GameState.tasks.keys && GameState.tasks.coffee && 
+                GameState.tasks.radio && GameState.tasks.mirror && GameState.tasks.clockRepaired && 
+                GameState.tasks.safe && GameState.tasks.gardenVisited) {
+                
+                GameState.tasks.street = true;
+                GameState.checkHUD();
                 this.manager.switchTo("RUA");
             } else {
-                NarrativeSystem.setThought("Raquel: 'Ainda não posso sair. Devo terminar de recolher minhas coisas, vestir meu sobretudo no quarto e me acalmar.'");
+                NarrativeSystem.setThought("Raquel: 'Ainda não posso sair. Devo terminar de recolher minhas coisas, vestir meu sobretudo no quarto, acalmar-me diante do espelho, resolver os puzzles ocultos de Ricardo e explorar a estufa.'");
                 this.player.pos.x -= 25; 
                 this.player.vel.x = 0;
             }
@@ -2564,6 +2885,7 @@ class SceneQuarto {
         ctx.drawImage(TextureCache.corridorPlanks, 540, 100);
         ctx.drawImage(TextureCache.tilesFloor, 1000, 100);
         ctx.drawImage(TextureCache.carpetFloor, 1000, 500);
+        ctx.drawImage(TextureCache.conservatorySoil, 1300, 500); // Novo cômodo: Estufa
 
         ctx.drawImage(TextureCache.wallPaper, 0, 80);
 
@@ -2575,7 +2897,7 @@ class SceneQuarto {
             ctx.fillStyle = "#2d1a10";
         }
 
-        // Cama
+        // Cama do Quarto
         ctx.fillStyle = "rgba(0,0,0,0.45)"; ctx.fillRect(264, 114, 120, 110); 
         ctx.fillStyle = "#22120b"; ctx.fillRect(260, 110, 120, 110); 
         ctx.fillStyle = "#ece0d1"; ctx.fillRect(265, 125, 110, 90); 
@@ -2589,7 +2911,7 @@ class SceneQuarto {
         ctx.lineWidth = 2;
         ctx.strokeRect(203, 253, 174, 104);
 
-        // Banheira
+        // Banheira do Banheiro
         ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(64, 824, 120, 70);
         ctx.fillStyle = "#cbd5e1"; ctx.fillRect(60, 820, 120, 70); 
         ctx.fillStyle = "#f8fafc"; ctx.fillRect(65, 825, 110, 60); 
@@ -2640,7 +2962,7 @@ class SceneQuarto {
         ctx.fillStyle = fireGrad; ctx.beginPath(); ctx.arc(120, 770, 70, 0, Math.PI*2); ctx.fill();
         ctx.restore();
 
-        // PORTÃO DE SAÍDA VISUAL
+        // PORTÃO DE SAÍDA VISUAL DOS FUNDOS
         ctx.fillStyle = "#06090e"; ctx.fillRect(1540, 710, 30, 160);
         ctx.fillStyle = "rgba(0, 240, 255, 0.12)"; ctx.fillRect(1542, 712, 10, 156);
         ctx.fillStyle = "#f59e0b"; ctx.fillRect(1545, 785, 4, 7); 
@@ -2673,7 +2995,7 @@ class SceneQuarto {
                     ctx.fillStyle = `rgba(255, 255, 255, ${0.4 + pulse * 0.6})`;
                     ctx.font = "18px 'Special Elite'";
                     ctx.textAlign = "center";
-                    ctx.fillText("SOBRETUDO AQUI", pr.x + pr.w/2, pr.y - 10);
+                    ctx.fillText("SOBRETUDO", pr.x + pr.w/2, pr.y - 10);
                 }
             }
             if (pr.name === "stove") {
@@ -2693,6 +3015,33 @@ class SceneQuarto {
             }
             if (pr.name === "recordPlayer") {
                 ctx.fillStyle = "#0f172a"; ctx.beginPath(); ctx.arc(pr.x + pr.w/2, pr.y + pr.h/2, 14, 0, Math.PI*2); ctx.fill();
+            }
+
+            // NOVAS DECORAÇÕES DE RENDERING PARA OS PROPS ADICIONADOS
+            if (pr.name === "grandfatherClock") {
+                // Desenhar face branca de relógio analógico
+                ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(pr.x + pr.w/2, pr.y + 25, 14, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = "#000"; ctx.fillRect(pr.x + pr.w/2 - 1, pr.y + 25, 2, -8); // Ponteiro fixo
+                if (GameState.tasks.clockRepaired) {
+                    // Ponteiro secundário consertado indicando 18h30 (6h30)
+                    ctx.fillRect(pr.x + pr.w/2 - 1, pr.y + 25, 2, 7); 
+                }
+                // Desenhar pêndulo dourado oscilante
+                let clockPulse = Math.sin(performance.now() * 0.005) * 8;
+                ctx.fillStyle = "#d97706";
+                ctx.fillRect(pr.x + pr.w/2 - 2 + clockPulse, pr.y + 45, 4, 22);
+                ctx.beginPath(); ctx.arc(pr.x + pr.w/2 + clockPulse, pr.y + 67, 7, 0, Math.PI*2); ctx.fill();
+            }
+            if (pr.name === "hiddenSafe") {
+                ctx.fillStyle = "#334155"; ctx.fillRect(pr.x + 4, pr.y + 4, pr.w - 8, pr.h - 8);
+                // Detalhe de fechadura mecânica rotativa
+                ctx.fillStyle = "#0f172a"; ctx.beginPath(); ctx.arc(pr.x + pr.w/2, pr.y + pr.h/2, 12, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = "#d1d5db"; ctx.fillRect(pr.x + pr.w/2 - 8, pr.y + pr.h/2 - 2, 16, 4);
+            }
+            if (pr.name === "winterGardenPlants") {
+                // Desenhar flores e rosas vermelhas pixeladas
+                ctx.fillStyle = "#047857"; ctx.fillRect(pr.x+10, pr.y+10, 8, 20); ctx.fillRect(pr.x+40, pr.y+25, 12, 35);
+                ctx.fillStyle = "#dc2626"; ctx.beginPath(); ctx.arc(pr.x+14, pr.y+8, 5, 0, Math.PI*2); ctx.arc(pr.x+46, pr.y+20, 6, 0, Math.PI*2); ctx.fill();
             }
         }
 
@@ -2827,7 +3176,7 @@ class SceneRua {
         this.screenShake = 0;
         this.ricardoCar = { x: 1390, y: 150, w: 130, h: 50, color: "#05060a", headlightOn: false, headlightAlpha: 0, speed: 0 };
 
-        NarrativeSystem.setThought("Raquel: 'A tempestade de outono fustiga meu rosto... Ricardo me aguarda.'"); 
+        NarrativeSystem.setThought("Raquel: 'A tempestade de outono fustiga meu rosto... Ricardo me aguarda estacionado logo adiante.'"); 
     }
     
     update(dt) {
@@ -3319,18 +3668,18 @@ let typing = false;
 
 // Árvore da História (Inicia direto na caminhada pós-prólogo)
 const story = {
-    "p1": { name: "Narrador", text: "Raquel e Ricardo caminham lado a lado pelo interior do cemitério de Minas. O silêncio dele é mais pesado que o mármore ao redor.", img: "https://i.imgur.com/7yra366.png", next: [{ t: "Avançar", n: "p2" }] },
-    "p2": { name: "Raquel", text: "Ricardo, por que estamos caminhando tanto? O sol já está quase sumindo no horizonte... você está me assustando um pouco.", img: "https://i.imgur.com/97O9WbL.png", next: [{ t: "Ouvir resposta", n: "p3" }] },
-    "p3": { name: "Ricardo", text: "O pôr do sol se vê melhor logo ali na frente. No jazigo da família Meireles... onde o tempo simplesmente para.", img: "https://i.imgur.com/QsGO8et.png", next: [{ t: "Segui-lo até a tumba", n: "p4" }] },
-    "p4": { name: "Narrador", text: "Vocês param diante de uma enorme porta de ferro fundido. O ar cheira a terra úmida, ferro e esquecimento eterno.", img: "https://i.imgur.com/mQWgs2W.png", next: [{ t: "Entrar na Tumba", n: "intermedio_entrar" }, { t: "Fugir correndo!", n: "intermedio_fuga" }] },
+    "p1": { name: "Narrador", text: "Raquel e Ricardo caminham lado a lado pelo interior do cemitério de Santa Maria. O silêncio dele é mais pesado que o mármore ao redor.", img: "https://i.imgur.com/7yra366.png", next: [{ t: "Avançar", n: "p2" }] },
+    "p2": { name: "Raquel", text: "Ricardo, por que estamos caminhando tanto? O sol já está quase sumindo no horizonte... você está me assustando de verdade.", img: "https://i.imgur.com/97O9WbL.png", next: [{ t: "Ouvir resposta", n: "p3" }] },
+    "p3": { name: "Ricardo", text: "O pôr do sol se vê melhor logo ali na frente. No jazigo abandonado da família Meireles... onde o tempo simplesmente parou para nós.", img: "https://i.imgur.com/QsGO8et.png", next: [{ t: "Segui-lo até a tumba", n: "p4" }] },
+    "p4": { name: "Narrador", text: "Vocês param diante de uma enorme porta de ferro fundido. O ar cheira a poeira antiga e esquecimento eterno.", img: "https://i.imgur.com/mQWgs2W.png", next: [{ t: "Entrar na Tumba", n: "intermedio_entrar" }, { t: "Fugir correndo!", n: "intermedio_fuga" }] },
     
-    "intermedio_entrar": { name: "Raquel", text: "Está tão escuro e gelado aqui dentro... Ricardo? Espere, que barulho foi esse na entrada?! A PORTA TRANCOU SOZINHA!", img: "https://i.imgur.com/mGmcspt.png", minigame: "labirinto" },
+    "intermedio_entrar": { name: "Raquel", text: "Está tão escuro e gelado aqui dentro... Ricardo? Espere, que barulho foi esse na entrada?! A PORTA TRANCOU SOZINHA POR FORA!", img: "https://i.imgur.com/mGmcspt.png", minigame: "labirinto" },
     "pos_labirinto": { name: "Narrador", text: "Milagrosamente, você encontra frestas em uma antiga saída de ventilação nos fundos da catacumba! Você se arrasta para fora e corre desesperadamente até o portão principal do cemitério... mas ele está fechado!", img: "https://i.imgur.com/8yzNODa.jpeg", next: [{ t: "Olhar em volta", n: "intermedio_fuga_direta" }] },
-    "intermedio_fuga": { name: "Raquel", text: "Não! Eu não vou entrar aí de jeito nenhum! Preciso correr de volta até o portão principal antes que ele tente algo!", img: "https://i.imgur.com/8yzNODa.jpeg", next: [{ t: "Chegar ao portão", n: "intermedio_fuga_direta" }] },
-    "intermedio_fuga_direta": { name: "Narrador", text: "O imenso portão de ferro está trancado por correntes e um pesado cadeado enferujado. Ricardo ressurge das sombras a poucos metros com um olhar sombrio. É agora ou nunca!", img: "https://i.imgur.com/Nlvf50h.png", minigame: "portao" },
+    "intermedio_fuga": { name: "Raquel", text: "Não! Eu não vou entrar aí de jeito nenhum! Preciso correr de volta até o portão principal antes que ele tente me fechar aqui dentro!", img: "https://i.imgur.com/8yzNODa.jpeg", next: [{ t: "Chegar ao portão", n: "intermedio_fuga_direta" }] },
+    "intermedio_fuga_direta": { name: "Narrador", text: "O imenso portão de ferro está trancado por correntes e um pesado cadeado enferrujado. Ricardo ressurge das sombras a poucos metros com um olhar doentio. É agora ou nunca!", img: "https://i.imgur.com/Nlvf50h.png", minigame: "portao" },
 
-    "morte": { title: "ETERNA", desc: "Você falhou em escapar. A escuridão te consome. Ricardo agora a possui para sempre no vazio frio do cemitério.", img: "https://i.imgur.com/E1Eihrf.png", end: true, type: "death" },
-    "sobrevive": { title: "MISERICÓRDIA", desc: "Com os dedos feridos e trêmulos, você estoura o bloqueio do cadeado! O portão se abre e você se joga para a estrada enquanto a noite engole o cemitério. Você sobreviveu... mas os sussurros te perseguirão para sempre.", img: "https://i.imgur.com/wJdaDVR.png", end: true, type: "win" }
+    "morte": { title: "ETERNA ESCURIDÃO", desc: "Você falhou em escapar. A escuridão te consome. Ricardo agora a possui para sempre no vazio frio do jazigo esquecido.", img: "https://i.imgur.com/E1Eihrf.png", end: true, type: "death" },
+    "sobrevive": { title: "MISERICÓRDIA E LIBERDADE", desc: "Com os dedos feridos e trêmulos, você estoura o bloqueio do cadeado! O portão se abre e você se joga para a estrada escura enquanto a noite engole o cemitério. Você sobreviveu... mas os sussurros de Ricardo te perseguirão para sempre.", img: "https://i.imgur.com/wJdaDVR.png", end: true, type: "win" }
 };
 
 // PRÓLOGO ESTILO POKÉMON / UNDERTALE
@@ -3372,7 +3721,7 @@ function initPrologoExplorativo() {
     if (isMobile) setupMobileDPadPart2();
 
     gameInterval = setInterval(updatePrologo, 1000 / 30);
-    showUndertaleBubble("DICA DE EXPLORAÇÃO", "Use as setas ou o controle virtual para andar. Explore o cenário e fale com Ricardo (ponto vermelho) lá em cima quando estiver pronta.");
+    showUndertaleBubble("SUSSURRO DE SANTA MARIA", "Use as setas ou o controle virtual para andar pelo cemitério. Fale com Ricardo (ponto vermelho) no topo da trilha para iniciar o crepúsculo.");
 }
 
 function showUndertaleBubble(name, text) {
@@ -3636,7 +3985,7 @@ function removeMobileDPadEventsPart2() {
 }
 
 function handleKeyDownPart2(e) { keys[e.key.toLowerCase()] = true; }
-    function handleKeyUpPart2(e) { keys[e.key.toLowerCase()] = false; }
+function handleKeyUpPart2(e) { keys[e.key.toLowerCase()] = false; }
 
 // --- LÓGICA DO LABIRINTO (PARTE 2) ---
 let player, enemy, maze, mazeSize, cellSize;
@@ -3749,4 +4098,3 @@ function cleanupPortao() { clearTimeout(portaoTimer); window.removeEventListener
 </script>
 </body>
 </html>
-
