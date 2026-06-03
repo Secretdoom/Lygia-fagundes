@@ -69,6 +69,80 @@
             justify-content: center; 
             align-items: center;
             transition: opacity 1.5s ease-in-out;
+            overflow: hidden;
+        }
+        /* Vinheta cinematográfica sobre o menu */
+        #menu::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse at center, rgba(0,0,0,0) 38%, rgba(0,0,0,0.55) 78%, rgba(0,0,0,0.9) 100%);
+            z-index: 1;
+        }
+        /* Grão de filme animado */
+        #menu-grain {
+            position: absolute;
+            inset: -50%;
+            width: 200%;
+            height: 200%;
+            pointer-events: none;
+            opacity: 0.07;
+            z-index: 2;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            animation: grainShift 0.5s steps(3) infinite;
+        }
+        @keyframes grainShift {
+            0% { transform: translate(0,0); }
+            33% { transform: translate(-6px, 4px); }
+            66% { transform: translate(5px, -5px); }
+            100% { transform: translate(0,0); }
+        }
+        /* Linhas de varredura sutis */
+        #menu-scanlines {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 2;
+            background: repeating-linear-gradient(to bottom, rgba(0,0,0,0.18) 0px, rgba(0,0,0,0.18) 1px, transparent 1px, transparent 3px);
+            opacity: 0.4;
+        }
+        .menu-content {
+            position: relative;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            animation: menuRise 1.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        @keyframes menuRise {
+            from { opacity: 0; transform: translateY(28px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .menu-quote {
+            font-family: 'Cormorant Garamond';
+            font-style: italic;
+            font-size: 19px;
+            color: rgba(255, 220, 190, 0.78);
+            margin-top: 34px;
+            max-width: 80%;
+            text-align: center;
+            text-shadow: 0 2px 6px #000;
+            min-height: 26px;
+            transition: opacity 1.1s ease;
+            letter-spacing: 0.5px;
+        }
+        .menu-credit {
+            position: absolute;
+            bottom: 18px;
+            left: 0; right: 0;
+            text-align: center;
+            font-family: 'VT323';
+            font-size: 15px;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.35);
+            z-index: 3;
         }
         .menu-title { 
             font-family: 'Special Elite'; 
@@ -224,6 +298,61 @@
             background: var(--accent-purple); 
             border-color: var(--accent-purple-bright); 
             box-shadow: 0 0 15px var(--accent-purple-glow);
+        }
+
+        /* MEDIDOR DE TENSÃO / PULSAÇÃO (NOVO HUD) */
+        #tension-hud {
+            position: absolute;
+            bottom: 22px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 230px;
+            z-index: 60;
+            opacity: 0;
+            animation: fadeInHUD 1s ease forwards 0.8s;
+            pointer-events: none;
+            font-family: 'Special Elite';
+        }
+        #tension-hud .tension-label {
+            font-size: 10px;
+            letter-spacing: 3px;
+            color: rgba(216, 180, 254, 0.65);
+            text-align: center;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+        }
+        #tension-hud .heart-icon {
+            display: inline-block;
+            width: 9px; height: 9px;
+            background: #a855f7;
+            transform: rotate(45deg);
+            position: relative;
+            box-shadow: 0 0 6px rgba(168,85,247,0.7);
+        }
+        #tension-hud .heart-icon::before,
+        #tension-hud .heart-icon::after {
+            content: ''; position: absolute; width: 9px; height: 9px; background: #a855f7; border-radius: 50%;
+        }
+        #tension-hud .heart-icon::before { top: -4.5px; left: 0; }
+        #tension-hud .heart-icon::after { top: 0; left: -4.5px; }
+        #tension-track {
+            height: 8px;
+            background: rgba(4, 2, 12, 0.85);
+            border: 1.5px solid rgba(168, 85, 247, 0.5);
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.7);
+        }
+        #tension-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #6b21a8, #a855f7, #d8b4fe);
+            transition: width 0.18s linear, background 0.4s ease;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.7);
         }
 
         /* BRANDING FOOTER */
@@ -613,6 +742,34 @@
             box-shadow: 0 0 0 4px #000;
         }
         #ui-text { font-size: 26px; line-height: 1.3; margin-bottom: 25px; min-height: 80px; }
+        /* Indicador ▼ de continuação no diálogo */
+        #ui-indicator {
+            position: absolute;
+            right: 18px; bottom: 12px;
+            color: var(--accent-orange);
+            font-size: 22px;
+            opacity: 0;
+            animation: bobArrow 1s ease-in-out infinite;
+            pointer-events: none;
+            text-shadow: 0 0 8px rgba(255,126,51,0.8);
+        }
+        #ui-indicator.show { opacity: 1; }
+        @keyframes bobArrow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(5px); }
+        }
+        /* Sobreposições cinematográficas da Parte 2 */
+        #part2-grain {
+            position: absolute; inset: -50%; width: 200%; height: 200%;
+            pointer-events: none; opacity: 0.05; z-index: 90;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n2'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n2)'/%3E%3C/svg%3E");
+            animation: grainShift 0.5s steps(3) infinite;
+        }
+        #part2-scanlines {
+            position: absolute; inset: 0; pointer-events: none; z-index: 91;
+            background: repeating-linear-gradient(to bottom, rgba(0,0,0,0.22) 0px, rgba(0,0,0,0.22) 1px, transparent 1px, transparent 3px);
+            opacity: 0.35;
+        }
         .choices { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
         .btn-choice { background: #0a0a0a; border: 1px solid #333; color: #fff; padding: 12px 24px; font-family: 'VT323'; font-size: 22px; cursor: pointer; transition: 0.3s; }
         .btn-choice:hover { background: var(--accent-orange); color: #000; }
@@ -697,15 +854,27 @@
     
     <!-- === MENU PRINCIPAL DE ENTRADA === -->
     <div id="menu">
-        <h3 class="menu-title">venha ver o pôr do sol</h3>
-        <span class="menu-sub">Homenagem interativa à Lygia Fagundes Telles</span>
-        <button class="btn-menu-start" onclick="iniciarTudo()">INICIAR JOGO</button>
+        <div id="menu-grain"></div>
+        <div id="menu-scanlines"></div>
+        <div class="menu-content">
+            <h3 class="menu-title">venha ver o pôr do sol</h3>
+            <span class="menu-sub">Homenagem interativa à Lygia Fagundes Telles</span>
+            <button class="btn-menu-start" onclick="iniciarTudo()">INICIAR JOGO</button>
+            <p class="menu-quote" id="menu-quote"></p>
+        </div>
+        <div class="menu-credit">SUSSURRO · CINE INTERACTIVE</div>
     </div>
 
     <!-- ==================== PARTE 1: O CASARÃO ==================== -->
     <div id="part1-wrapper">
         <div id="game-scaler">
             <div id="cine-badge">SUSSURRO | CINE INTERACTIVE</div>
+
+            <!-- MEDIDOR DE TENSÃO / PULSAÇÃO -->
+            <div id="tension-hud">
+                <div class="tension-label"><span class="heart-icon"></span> Pulsação</div>
+                <div id="tension-track"><div id="tension-fill"></div></div>
+            </div>
             
             <!-- BOTÃO PARA VER TAREFAS -->
             <button id="tasks-trigger-btn" class="game-hud" onclick="TasksSystem.toggle(event)">PROCESSO COGNITIVO</button>
@@ -804,11 +973,14 @@
     <div id="part2-wrapper">
         <div id="vignette"></div>
         <div id="scene-bg"></div>
+        <div id="part2-grain"></div>
+        <div id="part2-scanlines"></div>
         
         <div id="ui">
             <div id="ui-name" style="color:var(--accent-orange); font-family:'Special Elite'; font-size:20px; margin-bottom:10px;"></div>
             <div id="ui-text"></div>
             <div class="choices" id="choice-box"></div>
+            <div id="ui-indicator">▼</div>
         </div>
 
         <div id="game-container">
@@ -891,8 +1063,36 @@ class Vector2 {
 // FLAG MESTRE DE CONTROLE DE SESSÕES
 let CURRENT_GAME_PART = 1;
 
+// ROTAÇÃO DE EPÍGRAFES NO MENU (atmosfera, sem alterar a história)
+const MenuQuotes = {
+    lines: [
+        "“O pôr do sol se vê melhor logo ali na frente...”",
+        "“O tempo simplesmente parou para nós.”",
+        "“Onde o crepúsculo de Santa Maria nos espera.”",
+        "“Venha. Quero te mostrar uma última coisa.”"
+    ],
+    idx: 0, timer: null,
+    start() {
+        let el = document.getElementById('menu-quote');
+        if (!el) return;
+        el.textContent = this.lines[0];
+        el.style.opacity = '1';
+        this.timer = setInterval(() => {
+            el.style.opacity = '0';
+            setTimeout(() => {
+                this.idx = (this.idx + 1) % this.lines.length;
+                el.textContent = this.lines[this.idx];
+                el.style.opacity = '1';
+            }, 1100);
+        }, 5200);
+    },
+    stop() { if (this.timer) clearInterval(this.timer); }
+};
+window.addEventListener('DOMContentLoaded', () => MenuQuotes.start());
+
 // CONTROLADOR DE INICIALIZAÇÃO GERAL
 function iniciarTudo() {
+    MenuQuotes.stop();
     // Esconde o menu com fade out elegante
     const menuDiv = document.getElementById('menu');
     menuDiv.style.opacity = '0';
@@ -1857,6 +2057,104 @@ function drawThoughtBubble(ctx, text, px, py, isPanic) {
     ctx.restore();
 }
 
+// AVISO CONTEXTUAL DE INTERAÇÃO (NOVA MECÂNICA) - PARTE 1
+function drawInteractPrompt(ctx, player) {
+    let prop = player.nearbyProp;
+    if (!prop) return;
+    // Não mostrar enquanto digita pensamento longo nem durante QTE/segurar
+    if (GameState.qteActive || GameState.cutsceneActive) return;
+    if (player.holdTimer > 0) return;
+
+    let px = prop.x + prop.w / 2;
+    let py = prop.y - 14;
+    let pulse = 1.0 + Math.sin(performance.now() * 0.006) * 0.08;
+    let bobY = Math.sin(performance.now() * 0.005) * 3;
+
+    let label = Input.isMobile ? "AÇÃO" : "E";
+    let suffix = "EXAMINAR";
+
+    ctx.save();
+    ctx.translate(px, py + bobY);
+    ctx.scale(pulse, pulse);
+    ctx.font = "16px 'Special Elite'";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    let keyTxt = `[${label}]`;
+    let keyW = ctx.measureText(keyTxt).width;
+    let txtW = ctx.measureText(suffix).width;
+    let gap = 8;
+    let padX = 12;
+    let totalW = keyW + gap + txtW;
+    let boxW = totalW + padX * 2;
+    let boxH = 26;
+
+    // Cápsula de fundo
+    ctx.fillStyle = "rgba(8, 4, 18, 0.92)";
+    ctx.strokeStyle = "#a855f7";
+    ctx.lineWidth = 1.8;
+    ctx.shadowColor = "rgba(168, 85, 247, 0.6)";
+    ctx.shadowBlur = 12;
+    ctx.beginPath();
+    let bx = -boxW / 2, by = -boxH / 2, r = 6;
+    ctx.moveTo(bx + r, by);
+    ctx.arcTo(bx + boxW, by, bx + boxW, by + boxH, r);
+    ctx.arcTo(bx + boxW, by + boxH, bx, by + boxH, r);
+    ctx.arcTo(bx, by + boxH, bx, by, r);
+    ctx.arcTo(bx, by, bx + boxW, by, r);
+    ctx.closePath();
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.stroke();
+
+    // Texto da tecla (destaque) + ação
+    let startX = -totalW / 2;
+    ctx.textAlign = "left";
+    ctx.fillStyle = "#d8b4fe";
+    ctx.fillText(keyTxt, startX, 1);
+    ctx.fillStyle = "#f5f3ff";
+    ctx.fillText(suffix, startX + keyW + gap, 1);
+
+    // Setinha apontando para baixo (para o objeto)
+    ctx.fillStyle = "#a855f7";
+    ctx.beginPath();
+    ctx.moveTo(-5, boxH / 2);
+    ctx.lineTo(5, boxH / 2);
+    ctx.lineTo(0, boxH / 2 + 7);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+}
+
+// BÚSSOLA PARA A SAÍDA (NOVA MECÂNICA) - aparece quando todos os objetivos terminam
+function drawExitCompass(ctx, player, exitX, exitY) {
+    let dx = exitX - player.pos.x;
+    let dy = exitY - player.pos.y;
+    let dist = Math.hypot(dx, dy);
+    if (dist < 90) return;
+    let ang = Math.atan2(dy, dx);
+    let radius = 38;
+    let ax = player.pos.x + Math.cos(ang) * radius;
+    let ay = player.pos.y + Math.sin(ang) * radius;
+    let glow = 0.6 + Math.sin(performance.now() * 0.008) * 0.4;
+
+    ctx.save();
+    ctx.translate(ax, ay);
+    ctx.rotate(ang);
+    ctx.globalAlpha = glow;
+    ctx.fillStyle = "#34d399";
+    ctx.shadowColor = "#34d399";
+    ctx.shadowBlur = 14;
+    ctx.beginPath();
+    ctx.moveTo(12, 0);
+    ctx.lineTo(-6, -7);
+    ctx.lineTo(-2, 0);
+    ctx.lineTo(-6, 7);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+}
+
 const ParticlePool = {
     pool: [], maxSize: 800,
     init() {
@@ -2034,6 +2332,8 @@ class Player extends Entity {
 
         this.hairAngle = 0; this.hairVelocity = 0; this.coatSway = 0;
         this.blinkTimer = 0;
+        this.nearbyProp = null;
+        this.promptPulse = 0;
     }
 
     update(dt, obstacles, boundaries, interactionProps) {
@@ -2152,6 +2452,7 @@ class Player extends Entity {
         }
 
         let nearAny = false;
+        this.nearbyProp = null;
         if (interactionProps) {
             let interactTriggered = Input.isDown('e') || Input.isDown('action_m') || Input.isDown(' ');
             for (let i = 0; i < interactionProps.length; i++) {
@@ -2159,6 +2460,7 @@ class Player extends Entity {
                 if (this.pos.x > prop.x - 55 && this.pos.x < prop.x + prop.w + 55 &&
                     this.pos.y > prop.y - 45 && this.pos.y < prop.y + prop.h + 55) {
                     nearAny = true;
+                    this.nearbyProp = prop;
                     if(interactTriggered) {
                         if(this.state !== 3 && this.state !== 5) this.state = 3;
                         this.shakeOffset = Math.sin(this.animTimer * 12) * 2.0;
@@ -2888,6 +3190,12 @@ class SceneQuarto {
         if (GameState.qteActive) heartBPM = 100;
         SoundSynth.playHeartbeat(heartBPM);
 
+        // Tensão sutil no casarão: sobe perto da vitrola e no espelho; mantida abaixo do limiar de pânico pleno
+        let targetTension = Math.max(0, (1 - distToVinyl / 600)) * 0.16;
+        if (GameState.qteActive) targetTension = 0.3;
+        GameState.panicLevel += (targetTension - GameState.panicLevel) * dt * 1.2;
+        if (GameState.panicLevel < 0.001) GameState.panicLevel = 0;
+
         if (Math.random() < 0.15) {
             let rx = 45 + Math.random() * 1510;
             let ry = 110 + Math.random() * 835;
@@ -3160,6 +3468,16 @@ class SceneQuarto {
             let pct = this.player.holdTimer / this.player.maxHold;
             ctx.fillStyle = "rgba(1, 1, 3, 0.95)"; ctx.fillRect(this.player.pos.x - 30, this.player.pos.y - 25, 60, 6);
             ctx.fillStyle = "#a855f7"; ctx.fillRect(this.player.pos.x - 28, this.player.pos.y - 24, 56 * pct, 4); 
+        }
+
+        // Aviso contextual de interação
+        drawInteractPrompt(ctx, this.player);
+
+        // Bússola para a saída quando todos os objetivos terminam
+        if (GameState.tasks.cloth && GameState.tasks.keys && GameState.tasks.coffee &&
+            GameState.tasks.radio && GameState.tasks.mirror && GameState.tasks.clockRepaired &&
+            GameState.tasks.safe && GameState.tasks.gardenVisited && !GameState.tasks.street) {
+            drawExitCompass(ctx, this.player, 1555, 790);
         }
 
         if(GameState.qteActive) {
@@ -3523,7 +3841,7 @@ class SceneRua {
             ctx.fillStyle = "rgba(2, 1, 6, 0.95)"; ctx.fillRect(25, V_HEIGHT - 35, 180, 14);
             ctx.strokeStyle = "#5b21b6"; ctx.lineWidth = 2.0; ctx.strokeRect(25, V_HEIGHT - 35, 180, 14); 
             ctx.fillStyle = this.player.stamina < 20 ? "#f43f5e" : "#a855f7"; 
-            ctx.fillRect(27, V_HEIGHT - 33, 176 * (this.player.stamina / this.maxStamina), 10);
+            ctx.fillRect(27, V_HEIGHT - 33, 176 * (this.player.stamina / this.player.maxStamina), 10);
         }
     }
 }
@@ -3617,8 +3935,23 @@ const GameEngine = {
         }
 
         this.applyVignetteAndAberration(dt);
+        this.updateTensionHUD();
 
         this.animationFrameId = requestAnimationFrame((t) => this.loop(t));
+    },
+
+    updateTensionHUD() {
+        let fill = document.getElementById('tension-fill');
+        if (!fill) return;
+        // Base de pulsação calma (~22%) que sobe com o pânico/colapso
+        let base = 0.22;
+        let level = Math.min(1, base + GameState.panicLevel * 0.85 + (GameState.qteActive ? 0.18 : 0));
+        fill.style.width = (level * 100).toFixed(1) + "%";
+        if (level > 0.62) {
+            fill.style.background = "linear-gradient(90deg, #7f1d1d, #f43f5e, #fda4af)";
+        } else {
+            fill.style.background = "linear-gradient(90deg, #6b21a8, #a855f7, #d8b4fe)";
+        }
     },
 
     drawRGBSplit(dt) {
@@ -3917,7 +4250,9 @@ async function typeTextPart2(t, minigame) {
     typing = true;
     const el = document.getElementById('ui-text');
     const cb = document.getElementById('choice-box');
+    const ind = document.getElementById('ui-indicator');
     el.textContent = ""; cb.innerHTML = "";
+    if (ind) ind.classList.remove('show');
     
     for (let i = 0; i < t.length; i++) {
         el.textContent += t[i];
@@ -3925,6 +4260,7 @@ async function typeTextPart2(t, minigame) {
         await new Promise(r => setTimeout(r, 45));
     }
     typing = false;
+    if (ind) ind.classList.add('show');
 
     if (minigame) {
         const b = document.createElement('button');
@@ -4046,7 +4382,7 @@ function handleKeyDownPart2(e) { keys[e.key.toLowerCase()] = true; }
 function handleKeyUpPart2(e) { keys[e.key.toLowerCase()] = false; }
 
 // --- LÓGICA DO LABIRINTO (PARTE 2) ---
-let player, enemy, maze, mazeSize, cellSize;
+let player, enemy, maze, mazeSize, cellSize, mazeFog, mazeProximity = 0;
 function initLabirinto() {
     mazeSize = 13; cellSize = canvas.width / mazeSize;
     maze = [
@@ -4057,6 +4393,9 @@ function initLabirinto() {
         [1,1,1,1,1,1,1,1,1,1,1,1,1]
     ];
     player = { x: 1, y: 1, speed: 0.16 }; enemy = { x: 11, y: 1, speed: 0.045 };
+    mazeFog = document.createElement('canvas');
+    mazeFog.width = canvas.width; mazeFog.height = canvas.height;
+    mazeProximity = 0;
     window.addEventListener('keydown', handleKeyDownPart2); 
     window.addEventListener('keyup', handleKeyUpPart2);
     gameInterval = setInterval(updateLabirinto, 1000 / 30);
@@ -4087,20 +4426,112 @@ function updateLabirinto() {
     if (maze[pCellY] && maze[pCellY][pCellX] === 2) { cleanupLabirinto(); endMinigamePart2(true); return; }
     if (Math.abs(player.x - enemy.x) < 0.4 && Math.abs(player.y - enemy.y) < 0.4) { cleanupLabirinto(); endMinigamePart2(false); return; }
 
+    // Proximidade de Ricardo (para tensão visual)
+    let targetProx = Math.max(0, 1 - dist / 4.5);
+    mazeProximity += (targetProx - mazeProximity) * 0.2;
+
+    let t = performance.now();
+    let pcx = player.x * cellSize + cellSize/2;
+    let pcy = player.y * cellSize + cellSize/2;
+    let ecx = enemy.x * cellSize + cellSize/2;
+    let ecy = enemy.y * cellSize + cellSize/2;
+    let exitC = 11, exitR = 11;
+    let xcx = exitC * cellSize + cellSize/2;
+    let xcy = exitR * cellSize + cellSize/2;
+
+    // --- CHÃO ---
     ctxGame.clearRect(0, 0, canvas.width, canvas.height);
+    ctxGame.fillStyle = '#0b0908';
+    ctxGame.fillRect(0, 0, canvas.width, canvas.height);
+
+    // --- PAREDES E PISO ---
     for (let r = 0; r < mazeSize; r++) {
         for (let c = 0; c < mazeSize; c++) {
+            let x = c * cellSize, y = r * cellSize;
             if (maze[r][c] === 1) {
-                ctxGame.fillStyle = '#1c1c1c'; ctxGame.fillRect(c * cellSize, r * cellSize, cellSize, cellSize);
-            } else if (maze[r][c] === 2) {
-                ctxGame.fillStyle = '#ff7e33'; ctxGame.fillRect(c * cellSize, r * cellSize, cellSize, cellSize);
+                let g = ctxGame.createLinearGradient(x, y, x, y + cellSize);
+                g.addColorStop(0, '#2a2622'); g.addColorStop(1, '#13110f');
+                ctxGame.fillStyle = g; ctxGame.fillRect(x, y, cellSize, cellSize);
+                ctxGame.strokeStyle = 'rgba(0,0,0,0.5)'; ctxGame.lineWidth = 1;
+                ctxGame.strokeRect(x + 0.5, y + 0.5, cellSize - 1, cellSize - 1);
+                ctxGame.fillStyle = 'rgba(255,255,255,0.04)';
+                ctxGame.fillRect(x, y, cellSize, 2);
+            } else {
+                ctxGame.fillStyle = ((r + c) % 2 === 0) ? '#161210' : '#120f0d';
+                ctxGame.fillRect(x, y, cellSize, cellSize);
             }
         }
     }
-    ctxGame.shadowBlur = 15; ctxGame.shadowColor = "#fff"; ctxGame.fillStyle = '#ffffff';
-    ctxGame.beginPath(); ctxGame.arc(player.x * cellSize + cellSize/2, player.y * cellSize + cellSize/2, cellSize/3, 0, Math.PI*2); ctxGame.fill();
-    ctxGame.shadowColor = "#ff0000"; ctxGame.fillStyle = '#ff3333';
-    ctxGame.beginPath(); ctxGame.arc(enemy.x * cellSize + cellSize/2, enemy.y * cellSize + cellSize/2, cellSize/3, 0, Math.PI*2); ctxGame.fill();
+
+    // --- SAÍDA (brilho pulsante) ---
+    let exitPulse = 0.6 + Math.sin(t * 0.006) * 0.4;
+    ctxGame.save();
+    let exg = ctxGame.createRadialGradient(xcx, xcy, 2, xcx, xcy, cellSize * 1.6);
+    exg.addColorStop(0, `rgba(255,170,70,${0.55 * exitPulse})`);
+    exg.addColorStop(1, 'rgba(255,126,51,0)');
+    ctxGame.fillStyle = exg;
+    ctxGame.fillRect(xcx - cellSize*1.6, xcy - cellSize*1.6, cellSize*3.2, cellSize*3.2);
+    ctxGame.fillStyle = '#ff7e33';
+    ctxGame.shadowBlur = 18; ctxGame.shadowColor = '#ff9a4d';
+    ctxGame.fillRect(exitC * cellSize + 3, exitR * cellSize + 3, cellSize - 6, cellSize - 6);
+    ctxGame.restore();
+
+    // --- INIMIGO (Ricardo): vulto pulsante ---
+    ctxGame.save();
+    let enemyPulse = 0.7 + Math.sin(t * 0.02) * 0.3;
+    ctxGame.shadowBlur = 16 + mazeProximity * 18; ctxGame.shadowColor = '#ff1a1a';
+    let eg = ctxGame.createRadialGradient(ecx, ecy, 1, ecx, ecy, cellSize * 0.55);
+    eg.addColorStop(0, '#ff5252'); eg.addColorStop(1, '#7f0d0d');
+    ctxGame.fillStyle = eg;
+    ctxGame.globalAlpha = enemyPulse;
+    ctxGame.beginPath(); ctxGame.arc(ecx, ecy, cellSize/2.6, 0, Math.PI*2); ctxGame.fill();
+    ctxGame.restore();
+
+    // --- JOGADORA (Raquel) ---
+    ctxGame.save();
+    ctxGame.shadowBlur = 16; ctxGame.shadowColor = '#cdb4ff';
+    let pg = ctxGame.createRadialGradient(pcx, pcy, 1, pcx, pcy, cellSize * 0.5);
+    pg.addColorStop(0, '#ffffff'); pg.addColorStop(1, '#c4b5fd');
+    ctxGame.fillStyle = pg;
+    ctxGame.beginPath(); ctxGame.arc(pcx, pcy, cellSize/3, 0, Math.PI*2); ctxGame.fill();
+    ctxGame.restore();
+
+    // --- NÉVOA DE GUERRA / LANTERNA ---
+    let fctx = mazeFog.getContext('2d');
+    fctx.clearRect(0, 0, mazeFog.width, mazeFog.height);
+    fctx.fillStyle = 'rgba(2,2,4,0.93)';
+    fctx.fillRect(0, 0, mazeFog.width, mazeFog.height);
+    fctx.globalCompositeOperation = 'destination-out';
+    // Halo da lanterna em volta da Raquel
+    let lightR = cellSize * 3.1;
+    let lg = fctx.createRadialGradient(pcx, pcy, cellSize * 0.5, pcx, pcy, lightR);
+    lg.addColorStop(0, 'rgba(255,255,255,1)');
+    lg.addColorStop(0.7, 'rgba(255,255,255,0.55)');
+    lg.addColorStop(1, 'rgba(255,255,255,0)');
+    fctx.fillStyle = lg;
+    fctx.beginPath(); fctx.arc(pcx, pcy, lightR, 0, Math.PI*2); fctx.fill();
+    // A saída emite sua própria luz fraca através da névoa
+    let xlR = cellSize * 1.7 * exitPulse;
+    let xlg = fctx.createRadialGradient(xcx, xcy, 1, xcx, xcy, xlR);
+    xlg.addColorStop(0, 'rgba(255,255,255,0.85)');
+    xlg.addColorStop(1, 'rgba(255,255,255,0)');
+    fctx.fillStyle = xlg;
+    fctx.beginPath(); fctx.arc(xcx, xcy, xlR, 0, Math.PI*2); fctx.fill();
+    fctx.globalCompositeOperation = 'source-over';
+    ctxGame.drawImage(mazeFog, 0, 0);
+
+    // --- VINHETA VERMELHA DE PROXIMIDADE ---
+    if (mazeProximity > 0.05) {
+        let pv = ctxGame.createRadialGradient(canvas.width/2, canvas.height/2, canvas.width*0.2, canvas.width/2, canvas.height/2, canvas.width*0.6);
+        pv.addColorStop(0, 'rgba(0,0,0,0)');
+        pv.addColorStop(1, `rgba(120,0,0,${mazeProximity * 0.6})`);
+        ctxGame.fillStyle = pv; ctxGame.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // --- HUD ---
+    ctxGame.fillStyle = mazeProximity > 0.5 ? '#ff6b6b' : 'rgba(216,180,254,0.85)';
+    ctxGame.font = "16px 'Special Elite'"; ctxGame.textAlign = 'center';
+    ctxGame.fillText(mazeProximity > 0.6 ? 'ELE ESTÁ PERTO!' : 'ENCONTRE A SAÍDA', canvas.width/2, 22);
     ctxGame.shadowBlur = 0;
 }
 
@@ -4118,8 +4549,11 @@ function cleanupLabirinto() { window.removeEventListener('keydown', handleKeyDow
 
 // --- LÓGICA DO PORTÃO (PARTE 2) ---
 let barPos, barDirection, targetMin, targetMax, successes, requiredSuccesses, timeLimit, portaoTimer;
+let portaoStart, portaoFlash = 0, portaoShake = 0, portaoFlashColor = '#ff7e33';
+const PORTAO_TRACK_Y = 250, PORTAO_TRACK_H = 30;
 function initPortao() {
-    barPos = 10; barDirection = 1; targetMin = 140; targetMax = 220; successes = 0; requiredSuccesses = 3; timeLimit = 10;
+    barPos = 10; barDirection = 1; targetMin = 150; targetMax = 230; successes = 0; requiredSuccesses = 3; timeLimit = 10;
+    portaoStart = performance.now(); portaoFlash = 0; portaoShake = 0;
     canvas.onclick = triggerPortaoAction; canvas.ontouchstart = (e) => { e.preventDefault(); triggerPortaoAction(); };
     window.addEventListener('keydown', handlePortaoKey);
     gameInterval = setInterval(updatePortao, 1000 / 60);
@@ -4130,26 +4564,127 @@ function handlePortaoKey(e) { if(e.key === " " || e.code === "Space") { e.preven
 function triggerPortaoAction() {
     if (!gameRunning) return;
     if (barPos >= targetMin && barPos <= targetMax) {
-        successes++; audioPart2.playTone(400, 0.08, 'sine', 0.2);
+        successes++; audioPart2.playTone(400 + successes*80, 0.08, 'sine', 0.2);
+        portaoFlash = 1; portaoFlashColor = '#4ade80';
+        // Aperta a janela e acelera a cada tranca vencida
+        let mid = (targetMin + targetMax) / 2;
+        let half = Math.max(26, 40 - successes * 6);
+        targetMin = mid - half; targetMax = mid + half;
         barDirection = (barDirection > 0 ? 1 : -1) * (1 + successes * 0.4); 
         if (successes >= requiredSuccesses) { cleanupPortao(); endMinigamePart2(true); }
     } else {
         if(successes > 0) successes--; audioPart2.playTone(130, 0.25, 'sawtooth', 0.25);
+        portaoFlash = 1; portaoFlashColor = '#f43f5e'; portaoShake = 9;
     }
+}
+
+function drawPadlock(cx, cy, scale, openAmt) {
+    // openAmt: 0 fechado -> 1 totalmente aberto (arco gira para fora)
+    ctxGame.save();
+    ctxGame.translate(cx, cy);
+    ctxGame.scale(scale, scale);
+    // Arco (shackle)
+    ctxGame.save();
+    ctxGame.translate(-14, -18);
+    ctxGame.rotate(openAmt * -0.9);
+    ctxGame.strokeStyle = '#d4d4d8'; ctxGame.lineWidth = 7; ctxGame.lineCap = 'round';
+    ctxGame.beginPath();
+    ctxGame.arc(14, 0, 13, Math.PI, Math.PI * 2);
+    ctxGame.stroke();
+    ctxGame.strokeStyle = '#71717a'; ctxGame.lineWidth = 3;
+    ctxGame.beginPath(); ctxGame.arc(14, 0, 13, Math.PI, Math.PI * 2); ctxGame.stroke();
+    ctxGame.restore();
+    // Corpo
+    let bg = ctxGame.createLinearGradient(0, -10, 0, 26);
+    bg.addColorStop(0, '#fbbf24'); bg.addColorStop(1, '#b45309');
+    ctxGame.fillStyle = bg;
+    ctxGame.strokeStyle = '#78350f'; ctxGame.lineWidth = 2;
+    roundRectGame(-20, -8, 40, 36, 6);
+    ctxGame.fill(); ctxGame.stroke();
+    // Buraco da chave
+    ctxGame.fillStyle = '#3b1d04';
+    ctxGame.beginPath(); ctxGame.arc(0, 6, 4.5, 0, Math.PI*2); ctxGame.fill();
+    ctxGame.fillRect(-2, 6, 4, 12);
+    ctxGame.restore();
+}
+
+function roundRectGame(x, y, w, h, r) {
+    ctxGame.beginPath();
+    ctxGame.moveTo(x + r, y);
+    ctxGame.arcTo(x + w, y, x + w, y + h, r);
+    ctxGame.arcTo(x + w, y + h, x, y + h, r);
+    ctxGame.arcTo(x, y + h, x, y, r);
+    ctxGame.arcTo(x, y, x + w, y, r);
+    ctxGame.closePath();
 }
 
 function updatePortao() {
     if (!gameRunning) return;
     barPos += 5.5 * barDirection;
     if (barPos > canvas.width - 20 || barPos < 10) barDirection *= -1;
+    if (portaoFlash > 0) portaoFlash = Math.max(0, portaoFlash - 0.06);
+    if (portaoShake > 0) portaoShake = Math.max(0, portaoShake - 0.7);
 
+    let shakeX = (Math.random() - 0.5) * portaoShake;
+    let shakeY = (Math.random() - 0.5) * portaoShake;
     ctxGame.clearRect(0, 0, canvas.width, canvas.height);
-    ctxGame.fillStyle = "#151515"; ctxGame.fillRect(10, 180, canvas.width - 20, 35);
-    ctxGame.fillStyle = "rgba(255,126,51,0.5)"; ctxGame.fillRect(targetMin, 180, targetMax - targetMin, 35);
-    ctxGame.strokeStyle = "#ff7e33"; ctxGame.strokeRect(targetMin, 180, targetMax - targetMin, 35);
-    ctxGame.fillStyle = "#ffffff"; ctxGame.fillRect(barPos, 165, 12, 65);
-    ctxGame.fillStyle = "#fff"; ctxGame.font = "26px VT323"; ctxGame.textAlign = "center";
-    ctxGame.fillText(`CADEADO: ${successes} DE ${requiredSuccesses} TRANCAS EXPULSAS`, canvas.width/2, 110);
+    ctxGame.fillStyle = '#0a0807'; ctxGame.fillRect(0, 0, canvas.width, canvas.height);
+    ctxGame.save();
+    ctxGame.translate(shakeX, shakeY);
+
+    // Cadeado grande (abre conforme o progresso)
+    drawPadlock(canvas.width/2, 120, 2.2, successes / requiredSuccesses);
+
+    // Trilho
+    let ty = PORTAO_TRACK_Y, th = PORTAO_TRACK_H;
+    let tg = ctxGame.createLinearGradient(0, ty, 0, ty + th);
+    tg.addColorStop(0, '#1a1a1a'); tg.addColorStop(1, '#0a0a0a');
+    ctxGame.fillStyle = tg; ctxGame.fillRect(10, ty, canvas.width - 20, th);
+    ctxGame.strokeStyle = '#333'; ctxGame.lineWidth = 1; ctxGame.strokeRect(10, ty, canvas.width - 20, th);
+
+    // Zona-alvo
+    ctxGame.save();
+    ctxGame.shadowBlur = 14; ctxGame.shadowColor = '#ff7e33';
+    let zg = ctxGame.createLinearGradient(0, ty, 0, ty + th);
+    zg.addColorStop(0, 'rgba(255,160,80,0.65)'); zg.addColorStop(1, 'rgba(255,126,51,0.35)');
+    ctxGame.fillStyle = zg; ctxGame.fillRect(targetMin, ty, targetMax - targetMin, th);
+    ctxGame.strokeStyle = '#ff7e33'; ctxGame.lineWidth = 2; ctxGame.strokeRect(targetMin, ty, targetMax - targetMin, th);
+    ctxGame.restore();
+
+    // Agulha / gazua
+    ctxGame.save();
+    ctxGame.shadowBlur = 10; ctxGame.shadowColor = '#fff';
+    ctxGame.fillStyle = '#ffffff'; ctxGame.fillRect(barPos, ty - 12, 6, th + 24);
+    ctxGame.beginPath();
+    ctxGame.moveTo(barPos - 4, ty - 12); ctxGame.lineTo(barPos + 10, ty - 12); ctxGame.lineTo(barPos + 3, ty - 20);
+    ctxGame.closePath(); ctxGame.fill();
+    ctxGame.restore();
+
+    // Progresso (trancas)
+    for (let i = 0; i < requiredSuccesses; i++) {
+        ctxGame.fillStyle = i < successes ? '#4ade80' : '#3f3f46';
+        ctxGame.beginPath(); ctxGame.arc(canvas.width/2 - (requiredSuccesses-1)*11 + i*22, ty + th + 26, 6, 0, Math.PI*2); ctxGame.fill();
+    }
+
+    // Barra de tempo
+    let elapsed = (performance.now() - portaoStart) / 1000;
+    let remain = Math.max(0, 1 - elapsed / timeLimit);
+    ctxGame.fillStyle = '#222'; ctxGame.fillRect(40, ty + th + 48, canvas.width - 80, 7);
+    ctxGame.fillStyle = remain < 0.3 ? '#f43f5e' : '#a855f7';
+    ctxGame.fillRect(40, ty + th + 48, (canvas.width - 80) * remain, 7);
+
+    // Texto
+    ctxGame.fillStyle = '#e5e5e5'; ctxGame.font = "16px 'Special Elite'"; ctxGame.textAlign = 'center';
+    ctxGame.fillText('FORCE O CADEADO', canvas.width/2, 32);
+    ctxGame.restore();
+
+    // Flash de feedback
+    if (portaoFlash > 0) {
+        ctxGame.globalAlpha = portaoFlash * 0.35;
+        ctxGame.fillStyle = portaoFlashColor;
+        ctxGame.fillRect(0, 0, canvas.width, canvas.height);
+        ctxGame.globalAlpha = 1;
+    }
 }
 
 function cleanupPortao() { clearTimeout(portaoTimer); window.removeEventListener('keydown', handlePortaoKey); canvas.onclick = null; canvas.ontouchstart = null; }
