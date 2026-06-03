@@ -931,6 +931,7 @@
                     <button class="safe-btn safe-btn-cancel" onclick="SafePuzzle.cancel()">X</button>
                     <button class="safe-btn" onclick="SafePuzzle.press(0)">0</button>
                     <button class="safe-btn" style="background:#15803d; border-color:#22c55e;" onclick="SafePuzzle.confirm()">OK</button>
+                    <button class="safe-btn safe-btn-back" style="grid-column: 1 / -1;" onclick="SafePuzzle.delete()">&#8592; APAGAR</button>
                 </div>
                 <p style="font-size:14px; color:#a78bfa;">A pista está ligada ao pôr do sol anunciado na carta.</p>
             </div>
@@ -1029,6 +1030,30 @@
 const V_WIDTH = 960;
 const V_HEIGHT = 560;
 const TIME_STEP = 1 / 60;
+
+// Brilho (gama) cacheado para evitar getComputedStyle por frame
+let GAMMA_VALUE = 1.0;
+
+// Canvases offscreen reutilizados (evita alocar um canvas novo a cada frame)
+const OffscreenBuffers = {
+    light: null, lightCtx: null, rgb: null, rgbCtx: null,
+    getLight() {
+        if (!this.light) {
+            this.light = document.createElement('canvas');
+            this.light.width = 1600; this.light.height = 1000;
+            this.lightCtx = this.light.getContext('2d');
+        }
+        return this.light;
+    },
+    getRGB() {
+        if (!this.rgb) {
+            this.rgb = document.createElement('canvas');
+            this.rgb.width = V_WIDTH; this.rgb.height = V_HEIGHT;
+            this.rgbCtx = this.rgb.getContext('2d');
+        }
+        return this.rgb;
+    }
+};
 
 class Vector2 {
     constructor(x = 0, y = 0) { this.x = x; this.y = y; }
@@ -1417,6 +1442,13 @@ const SafePuzzle = {
         document.getElementById('safe-input-overlay').style.display = "none";
         GameState.isPaused = false;
     },
+    delete() {
+        if (this.currentInput.length > 0) {
+            this.currentInput = this.currentInput.slice(0, -1);
+            this.updateDisplay();
+            SoundSynth.playStep('carpet');
+        }
+    },
     updateDisplay() {
         let display = this.currentInput;
         while (display.length < 4) display += "-";
@@ -1673,12 +1705,35 @@ const MenuSystem = {
         }
     },
     updateGamma(val) {
+        GAMMA_VALUE = parseFloat(val) || 1.0;
         document.documentElement.style.setProperty('--gamma-multiplier', val);
     },
     updateJoyOpacity(val) {
         document.getElementById('mobile-joystick').style.opacity = val;
     }
 };
+
+// ATALHOS DE TECLADO GLOBAIS (Esc / teclado do cofre)
+window.addEventListener('keydown', (e) => {
+    const safeOverlay = document.getElementById('safe-input-overlay');
+    const safeOpen = safeOverlay && safeOverlay.style.display === 'flex';
+
+    if (safeOpen) {
+        if (e.key >= '0' && e.key <= '9') { e.preventDefault(); SafePuzzle.press(e.key); }
+        else if (e.key === 'Enter') { e.preventDefault(); SafePuzzle.confirm(); }
+        else if (e.key === 'Backspace') { e.preventDefault(); SafePuzzle.delete(); }
+        else if (e.key === 'Escape') { e.preventDefault(); SafePuzzle.cancel(); }
+        return;
+    }
+
+    if (e.key === 'Escape' && CURRENT_GAME_PART === 1) {
+        e.preventDefault();
+        if (LoreSystem.active) { LoreSystem.close(); return; }
+        const settings = document.getElementById('settings-overlay');
+        if (settings && settings.style.display === 'flex') { MenuSystem.close(); }
+        else { MenuSystem.open(); }
+    }
+});
 
 // TEXTURAS CACHEADAS DA PARTE 1
 const TextureCache = {
@@ -3382,13 +3437,14 @@ class SceneQuarto {
         ctx.save(); 
         ctx.globalCompositeOperation = "multiply";
         
-        let customGammaVal = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--gamma-multiplier')) || 1.0;
+        let customGammaVal = GAMMA_VALUE;
         let baseDarkness = 0.98 - (this.thunderAlpha * 0.85);
         let mapDarkness = Math.max(0, Math.min(0.99, baseDarkness * (1 / customGammaVal)));
         
-        let shadowCanvas = document.createElement('canvas');
-        shadowCanvas.width = 1600; shadowCanvas.height = 1000;
-        let sCtx = shadowCanvas.getContext('2d');
+        let shadowCanvas = OffscreenBuffers.getLight();
+        let sCtx = OffscreenBuffers.lightCtx;
+        sCtx.globalCompositeOperation = "source-over";
+        sCtx.clearRect(0, 0, 1600, 1000);
         sCtx.fillStyle = `rgba(8, 12, 22, ${mapDarkness})`;
         sCtx.fillRect(0, 0, 1600, 1000);
 
@@ -3403,6 +3459,7 @@ class SceneQuarto {
         fireplaceLightGrad.addColorStop(0, "rgba(255,255,255,1.0)");
         fireplaceLightGrad.addColorStop(1, "rgba(255,255,255,0)");
         sCtx.fillStyle = fireplaceLightGrad; sCtx.beginPath(); sCtx.arc(120, 770, 180 * fFlick, 0, Math.PI*2); sCtx.fill();
+        sCtx.globalCompositeOperation = "source-over";
 
         ctx.drawImage(shadowCanvas, 0, 0);
         ctx.restore();
@@ -3901,9 +3958,10 @@ const GameEngine = {
         this.heartbeat += dt * (GameState.panicLevel * 16.0);
         let shift = Math.sin(this.heartbeat) * GameState.panicLevel * 8.0;
         
-        let tempCanvas = document.createElement('canvas');
-        tempCanvas.width = V_WIDTH; tempCanvas.height = V_HEIGHT;
-        let tempCtx = tempCanvas.getContext('2d');
+        let tempCanvas = OffscreenBuffers.getRGB();
+        let tempCtx = OffscreenBuffers.rgbCtx;
+        tempCtx.setTransform(1, 0, 0, 1, 0, 0);
+        tempCtx.clearRect(0, 0, V_WIDTH, V_HEIGHT);
         
         this.sceneManager.draw(tempCtx);
 
@@ -4207,7 +4265,7 @@ async function typeTextPart2(t, minigame) {
     if (minigame) {
         const b = document.createElement('button');
         b.className = 'btn-choice'; b.innerText = "SITUAÇÃO DE RISCO!";
-        b.style.borderColor = "var(--accent-orange)";
+        b.style.borderColor = "#ff7e33";
         b.onclick = () => { setupGameBoxPart2(minigame); };
         cb.appendChild(b);
     } else {
